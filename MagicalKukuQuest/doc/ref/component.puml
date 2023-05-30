@@ -1,0 +1,7 @@
+StartPoint -> (QuestionManager) 
+(QuestionManager) ---> (ScoreControlManager)
+(ScoreControlManager) ---> (QuestionManager)
+(QuestionManager) --> (TimeManager)
+(TimeManager) --> (QuestionManager)
+(QuestionManager) ---> (AnimeController)
+(AnimeController) ---> (QuestionManager)

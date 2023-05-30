@@ -1,0 +1,68 @@
+@startuml
+
+skinparam packageStyle node
+
+title サンプルアプリ システム構成図
+
+package "チャレンジタッチ端末\nCT1 / CT2" as ct {
+  package "ブラウザ " as browser{
+  }
+}
+
+package "ゼミ共通サーバー" as szemi_server{
+  database "汎用KVS" as kvs{
+  }
+}
+
+cloud "Microsoft Azure" as azure{
+  package "Load Balancer" as lb{
+  }
+
+  package "Jewelサーバー" as Jewel_server{
+    package "Tomcat" as tomcat{
+    }
+    package "Apache" as apache{
+    }
+    package "  JDK  " as jdk{
+    }
+    package " CentS " as centos{
+    }
+  }
+  package "Jewelサーバー" as Jewel_server2{
+  }
+  package "Jewelサーバー" as Jewel_server3{
+  }
+  package "Jewelサーバー" as Jewel_server4{
+  }
+  database "JewelDB" as db{
+  }
+}
+
+browser  -down-> lb
+lb  -down-> Jewel_server
+lb  -down-> Jewel_server2
+lb  -down-> Jewel_server3
+lb  -down-> Jewel_server4
+
+Jewel_server -[hidden]> Jewel_server2
+Jewel_server2 -[hidden]> Jewel_server3
+Jewel_server3 -[hidden]> Jewel_server4
+
+Jewel_server -down--> db
+Jewel_server2 -down--> db
+Jewel_server3 -down--> db
+Jewel_server4 -down--> db
+
+apache  -down[hidden]-> jdk
+apache  -down[hidden]-> centos
+
+browser  -down> szemi_server
+
+note right of Jewel_server4
+  WEB/APサーバは同構成で4台
+end note
+
+hide members
+hide circle
+
+@enduml
