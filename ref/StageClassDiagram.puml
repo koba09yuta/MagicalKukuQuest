@@ -1,0 +1,40 @@
+@startuml StageClassDiagram
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+package StageComponent {
+    class StageController {
+        初期表示()
+        他パッケージとのイベント連携()
+        出題()
+        解答受付()
+        ゲーム終了()
+    }
+    class QuestionView {
+        問題表示()
+        正誤アニメーション()
+        終了アニメーション()
+        解答表示()
+    }
+    class AnswerButtonView {
+        ボタン有効化切替()
+    }
+
+    class StageService {
+        次の問題をセット()
+        正誤判定()
+    }
+    class StageMessageBroker {
+        ステージ部分のイベント通知()
+    }
+    class "QuestionSetting(ScriptableObject)" {
+        出題データ
+    }
+
+    StageController --> QuestionView
+    StageController --> AnswerButtonView
+    StageController --> StageService
+    StageController --> StageMessageBroker
+    StageService --> "QuestionSetting(ScriptableObject)"
+}
+
+@enduml

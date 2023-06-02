@@ -1,0 +1,12 @@
+@startuml
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+title <size:18> トップ設計 </size>
+
+component TopSceneController as sceneCon <<Controller>>
+note top : シーンの制御を行う
+
+component Top as TopC <<Package>>
+note top : ステージ遷移のボタンや画像制御を行う
+
+sceneCon ..> TopC
+@enduml

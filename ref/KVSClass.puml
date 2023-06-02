@@ -1,0 +1,13 @@
+@startuml KVSClassDiagram
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+package KVSComponent {
+    class KVSManager {
+        他パッケージとのイベント連携を行う()
+        登録()
+        取得()
+        更新()
+    }
+ }
+
+@enduml

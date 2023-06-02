@@ -1,0 +1,185 @@
+@startuml StageSequence
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+participant StageSceneController
+participant Stage
+participant Life
+participant Timer
+participant GiveUpModal
+participant KVS
+
+
+== State:Init  ==
+activate StageSceneController
+
+StageSceneController -> Stage:初期化
+activate Stage
+Stage -> Stage:初期化
+Stage -> KVS:セーブデータ取得
+activate KVS
+KVS -> KVS:参照
+Stage <- KVS:取得結果（取得できない場合デフォルト）
+deactivate KVS
+StageSceneController <- Stage:初期化完了
+deactivate Stage
+
+StageSceneController -> Life:初期化処理
+activate Life
+Life -> Life:初期化
+StageSceneController <- Life:初期化完了
+deactivate Life
+
+StageSceneController -> Timer:初期化処理
+activate Timer
+Timer -> Timer:初期化
+StageSceneController <- Timer:初期化完了
+deactivate Timer
+
+StageSceneController -> GiveUpModal:初期化処理
+activate GiveUpModal
+GiveUpModal -> GiveUpModal:初期化
+StageSceneController <- GiveUpModal:初期化完了
+deactivate GiveUpModal
+
+StageSceneController -> StageSceneController:PreparateQuestionへ移行
+
+== State:PreparateQuestion  ==
+StageSceneController -> Stage:出題準備
+activate Stage
+Stage -> Stage:全ボタン非アクティブ化、出題内容セット
+Stage -> StageSceneController:出題準備完了
+deactivate Stage
+
+StageSceneController -> Timer:出題準備
+activate Timer
+Timer -> Timer:リセット
+Timer -> StageSceneController:出題準備完了
+deactivate Timer
+
+StageSceneController -> StageSceneController:Answerへ移行
+
+== State:Answer  ==
+StageSceneController -> Timer:出題開始
+activate Timer
+Timer -> Timer:起動
+StageSceneController -> Stage:出題開始
+activate Stage
+Stage -> KVS:セーブ(KVS連携)
+activate KVS
+KVS -> KVS:登録、更新
+KVS -> Stage:セーブ完了
+deactivate KVS
+Stage -> Stage:全ボタンアクティブ化、出題
+
+...中断操作...
+opt 中断
+    StageSceneController -> Timer:中断指示
+    Timer -> Timer:停止
+    Timer -> StageSceneController:中断完了
+    deactivate Timer
+    StageSceneController -> Stage:中断指示
+    Stage -> Stage:全ボタン非アクティブ化
+    Stage -> StageSceneController:中断完了
+    deactivate Stage
+    StageSceneController -> GiveUpModal:モーダル展開
+    activate GiveUpModal
+    GiveUpModal -> GiveUpModal:ゲームに戻る・TOPに戻るボタンアクティブ化
+
+    ...入力操作...
+    alt TOPに戻る
+        GiveUpModal -> StageSceneController:リタイア通知
+        deactivate GiveUpModal
+        StageSceneController -> StageSceneController:TOPへ移行
+    else ゲームに戻る
+        activate GiveUpModal
+        GiveUpModal -> StageSceneController:再開通知
+        deactivate GiveUpModal
+        StageSceneController -> Timer:再開指示
+        activate Timer
+        Timer -> Timer:起動
+        Timer -> StageSceneController:再開完了
+        StageSceneController -> Stage:再開指示
+        activate Stage
+        Stage -> Stage:全ボタンアクティブ化
+        Stage -> StageSceneController:再開完了
+    end
+end
+
+...解答入力操作...
+opt 解答入力
+    Stage -> Stage:解答受付
+    Stage -> StageSceneController:出題終了、正誤通知
+    deactivate Stage
+    StageSceneController -> Timer:停止指示
+    Timer -> Timer:停止
+    Timer -> StageSceneController:停止完了
+    deactivate Timer
+    StageSceneController -> StageSceneController:AnswerPerformanceへ移行
+    activate Timer
+    activate Stage
+end
+
+...時間経過待機...
+opt タイムアップ
+    Timer -> Timer:停止
+    Timer -> StageSceneController:タイムアップ通知
+    deactivate Timer
+    StageSceneController -> Stage:出題終了指示
+    Stage -> Stage:正誤判定
+    Stage -> StageSceneController:出題終了、正誤通知
+    deactivate Stage
+    StageSceneController -> StageSceneController:AnswerPerformanceへ移行
+end
+
+== State:AnswerPerformance  ==
+StageSceneController -> Stage:正誤演出
+activate Stage
+StageSceneController -> Life:ライフ更新
+activate Life
+alt 正誤結果が正解
+    Life -> Life:相手のライフ減少
+    Stage -> Stage:正解アニメーション
+else 正誤結果が不正解
+    Life -> Life:自分のライフ減少
+    Stage -> Stage:不正解アニメーション
+    Stage -> Stage:解答表示
+end
+Life -> StageSceneController:ライフ更新終了
+deactivate Life
+Stage -> StageSceneController:正誤演出終了
+deactivate Stage
+StageSceneController -> StageSceneController:EndQuestionへ移行
+note left:ライフ更新、正誤演出がすべて完了後
+
+== State:EndQuestion  ==
+StageSceneController -> Life:ライフ取得
+activate Life
+Life -> Life:自分のライフ取得
+Life -> Life:相手のライフ取得
+Life -> StageSceneController:ライフ取得完了
+deactivate Life
+
+alt 自分か相手のライフが0
+    StageSceneController ->  StageSceneController:StageEndへ移行
+else どちらのライフも0ではない
+    StageSceneController ->  Stage:問題準備
+    activate Stage
+    Stage -> Stage:次の問題をセット
+    Stage -> StageSceneController:問題準備完了
+    deactivate Stage
+    StageSceneController ->  StageSceneController:PreparateQuestionへ移行
+end
+
+== State:StageEnd  ==
+StageSceneController -> Stage:終了演出
+activate Stage
+alt クリア
+    Stage -> Stage:クリア演出
+else クリア失敗
+    Stage -> Stage:クリア失敗演出
+end
+Stage -> StageSceneController:終了演出終了
+deactivate Stage
+StageSceneController ->  StageSceneController:TOPへ移行
+deactivate StageSceneController
+@enduml

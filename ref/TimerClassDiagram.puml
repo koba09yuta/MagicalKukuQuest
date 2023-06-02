@@ -1,0 +1,29 @@
+@startuml TimerClassDiagram
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+package TimerComponent {
+    class TimerController {
+        初期処理()
+        他パッケージとのイベント連携を行う()
+        リセット()
+        起動()
+        停止()
+
+    }
+    class TimerView {
+        制限時間バー表示()
+    }
+    class TimerService {
+        時間取得()
+        時間を1秒ごとに減らす()
+    }
+    class TimerMessageBroker {
+        タイマーイベント通知を行う()
+    }
+
+    TimerController --> TimerView
+    TimerController --> TimerService
+    TimerController --> TimerMessageBroker
+}
+
+@enduml

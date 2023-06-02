@@ -1,0 +1,40 @@
+@startuml LifeClassDiagram
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+package LifeComponent {
+    class LifeController {
+        初期表示()
+        他パッケージとのイベント連携を行う()
+    }
+    abstract class LifeViewBase {
+        ライフ表示()
+    }
+    class LifeViewEnemy extends LifeViewBase{
+        敵のライフ表示()
+    }
+    class LifeViewMy extends LifeViewBase{
+        自分のライフ表示()
+    }
+    abstract class LifeServiceBase {
+        ライフの量を取得()
+        ライフの量を減らす()
+    }
+    class LifeServiceEnemy extends LifeServiceBase {
+        敵のライフの量を取得()
+        敵のライフの量を減らす()
+    }
+    class LifeServiceMy extends LifeServiceBase {
+        自分のライフの量を取得()
+        自分のライフの量を減らす()
+    }
+    class LifeMessageBroker {
+        ライフのイベント通知を行う()
+    }
+    LifeController --> LifeViewEnemy
+    LifeController --> LifeViewMy
+    LifeController --> LifeServiceEnemy
+    LifeController --> LifeServiceMy
+    LifeController --> LifeMessageBroker
+}
+
+@enduml

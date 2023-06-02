@@ -1,0 +1,20 @@
+@startuml GiveUpModalClassDiagram
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+package GiveUpModalComponent {
+    class GiveUpModalController {
+        初期処理()
+        他パッケージとのイベント連携()
+    }
+    class GiveUpModalView {
+        オブジェクト表示()
+    }
+    class GiveUpModalMessageBroker {
+        中断モーダルのイベント通知()
+    }
+
+    GiveUpModalController --> GiveUpModalView
+    GiveUpModalController <--> GiveUpModalMessageBroker
+}
+
+@enduml

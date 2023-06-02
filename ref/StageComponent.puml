@@ -1,0 +1,29 @@
+@startuml
+right header <size:20><color:red>Confidential BenesseCorporation</color></size>
+
+title <size:18> ステージ設計 </size>
+component StageSceneController as SceneCon <<Controller>>
+note top : シーン全体の制御
+
+component Stage as stage <<Package>>
+note bottom : ステージ画面の問題表示や正誤判定、ゲーム終了の制御を行う
+
+component Timer as timer <<Package>>
+note top : 制限時間を制御する
+
+component Life as life <<Package>>
+note bottom : プレイヤーと敵のライフを制御する
+
+component GiveUpModal as GiveUpModal <<Package>>
+note bottom : ゲーム中断時モーダルを管理する
+
+component KVS as kvs <<Package>>
+note bottom : KVSへの登録・更新・参照を行う
+
+SceneCon ..> stage
+SceneCon ..> timer
+SceneCon ..> life
+SceneCon ..> GiveUpModal
+stage ..> kvs
+
+@enduml
